@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:,">
+<title>Kanban V1 · Work Plot</title>
+<link rel="stylesheet" href="app.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#board">Skip to board</a>
+
+<svg class="sr-only" aria-hidden="true" focusable="false">
+  <symbol id="i-plus" viewBox="0 0 16 16">
+    <path d="M8 2v12M2 8h12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 16 16">
+    <path d="M3 3l10 10M13 3L3 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </symbol>
+  <symbol id="i-refresh" viewBox="0 0 16 16">
+    <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M13.5 1.5v3.2h-3.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </symbol>
+  <symbol id="i-grid" viewBox="0 0 16 16">
+    <path d="M1.5 1.5h13v13h-13zM5.5 1.5v13M10.5 1.5v13M1.5 5.5h13M1.5 10.5h13" fill="none" stroke="currentColor" stroke-width="1"/>
+  </symbol>
+  <symbol id="i-hazard" viewBox="0 0 16 16">
+    <path d="M8 1.5l6 13H2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M8 6v4.5M8 12.4v.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </symbol>
+  <symbol id="i-back" viewBox="0 0 16 16">
+    <path d="M13.5 8h-11M7 3.5L2.5 8 7 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </symbol>
+  <symbol id="i-forward" viewBox="0 0 16 16">
+    <path d="M2.5 8h11M9 3.5L13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </symbol>
+</svg>
+
+<header class="masthead">
+  <div class="masthead__top">
+    <div class="masthead__id">
+      <h1>Kanban V1</h1>
+      <p class="masthead__note" id="view-note">Work plot · nine status lanes</p>
+    </div>
+    <div class="progress-readout">
+      <div class="progress-readout__cell">
+        <span class="progress-readout__label" id="progress-label">Completion</span>
+        <span class="progress-readout__figure"><span id="progress-percent">–</span> <small id="progress-fraction" aria-hidden="true"></small><span class="sr-only" id="progress-sr">Loading progress</span></span>
+      </div>
+      <div class="progress-scale" role="img" aria-labelledby="progress-label" aria-describedby="progress-sr">
+        <div class="progress-scale__fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <form class="toolbar" id="filters" novalidate>
+    <fieldset class="filter-set">
+      <legend>Plot filters</legend>
+      <div class="field">
+        <label for="filter-status">Status</label>
+        <select id="filter-status" name="status">
+          <option value="">All statuses</option>
+          <option value="TODO">TODO</option>
+          <option value="READY">READY</option>
+          <option value="IN_PROGRESS">IN PROGRESS</option>
+          <option value="REVIEW">REVIEW</option>
+          <option value="CHANGES_REQUESTED">CHANGES REQUESTED</option>
+          <option value="APPROVED">APPROVED</option>
+          <option value="MERGED">MERGED</option>
+          <option value="CLOSED">CLOSED</option>
+          <option value="BLOCKED">BLOCKED</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-type">Card type</label>
+        <select id="filter-type" name="card_type">
+          <option value="">All types</option>
+          <option value="project_epic">Epic</option>
+          <option value="feature">Feature</option>
+          <option value="task">Task</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-parentage">Parent</label>
+        <select id="filter-parentage" name="has_parent">
+          <option value="">Any parent</option>
+          <option value="false">Roots only</option>
+          <option value="true">With parent</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-parent">Parent id</label>
+        <input id="filter-parent" name="parent_id" list="card-ids" autocomplete="off" spellcheck="false" placeholder="e.g. 0b2c43aa">
+      </div>
+    </fieldset>
+    <div class="toolbar__actions">
+      <button type="submit" class="btn">Apply</button>
+      <button type="button" class="btn btn--quiet" id="filter-clear">Clear</button>
+      <button type="button" class="btn btn--quiet" id="grid-toggle" aria-pressed="true">
+        <svg aria-hidden="true"><use href="#i-grid"/></svg>
+        Graticule
+      </button>
+      <button type="button" class="btn btn--quiet" id="refresh">
+        <svg aria-hidden="true"><use href="#i-refresh"/></svg>
+        Refresh
+      </button>
+      <button type="button" class="btn btn--primary" id="new-card">
+        <svg aria-hidden="true"><use href="#i-plus"/></svg>
+        New card
+      </button>
+    </div>
+  </form>
+</header>
+
+<main>
+  <noscript>
+    <p class="banner banner__text">This board reads the Kanban V1 HTTP API and requires JavaScript.</p>
+  </noscript>
+
+  <div id="banner-region"></div>
+
+  <nav class="plot-nav" aria-label="Status lanes">
+    <button type="button" class="plot-nav__step" id="lane-step-prev" aria-label="Show previous lane" aria-disabled="true" hidden>
+      <svg aria-hidden="true"><use href="#i-back"/></svg>
+    </button>
+    <ol class="plot-nav__scale" id="lane-scale"></ol>
+    <button type="button" class="plot-nav__step" id="lane-step-next" aria-label="Show next lane" aria-disabled="true" hidden>
+      <svg aria-hidden="true"><use href="#i-forward"/></svg>
+    </button>
+    <p class="plot-nav__range" id="lane-range">Lanes 1–9 of 9</p>
+  </nav>
+  <p class="sr-only" id="board-hint">Nine status lanes are drawn left to right. Use the left and right arrow keys to scroll the board, or the previous lane and next lane controls, to reach every lane.</p>
+
+  <div class="chart" id="board" role="region" aria-label="Board: nine status lanes" aria-describedby="board-hint" aria-busy="true" tabindex="0">
+    <div class="chart__field chart__field--grid" id="field">
+      <svg class="chart__rules" id="rules" aria-hidden="true" focusable="false"></svg>
+    </div>
+  </div>
+</main>
+
+<dialog class="sheet" id="detail" aria-labelledby="detail-title">
+  <div id="detail-body"></div>
+</dialog>
+
+<dialog class="form-dialog" id="create-dialog" aria-labelledby="create-title">
+  <form id="create-form" novalidate>
+    <div class="form-dialog__body">
+      <h2 class="form-dialog__title" id="create-title">New card</h2>
+      <div class="field">
+        <label for="create-title-input">Title</label>
+        <input id="create-title-input" name="title" type="text" required autocomplete="off" maxlength="200">
+      </div>
+      <div class="field">
+        <label for="create-type">Card type</label>
+        <select id="create-type" name="card_type" required>
+          <option value="task" selected>Task</option>
+          <option value="feature">Feature</option>
+          <option value="project_epic">Epic (root only)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="create-parent">Parent id (optional)</label>
+        <input id="create-parent" name="parent_id" list="card-ids" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="create-owner">Owner (optional)</label>
+        <input id="create-owner" name="owner" type="text" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="create-priority">Priority (optional)</label>
+        <input id="create-priority" name="priority" type="text" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="create-requirements">Requirements</label>
+        <textarea id="create-requirements" name="requirements" rows="2" spellcheck="false" aria-describedby="create-requirements-hint"></textarea>
+        <p class="field__hint" id="create-requirements-hint">Optional, one entry per line. Blank lines are dropped.</p>
+      </div>
+      <div class="field">
+        <label for="create-blockers">Blockers</label>
+        <textarea id="create-blockers" name="blockers" rows="2" spellcheck="false" aria-describedby="create-blockers-hint"></textarea>
+        <p class="field__hint" id="create-blockers-hint">Optional, one entry per line. Blank lines are dropped.</p>
+      </div>
+      <p class="alert-line alert-line--hazard" id="create-error" role="status" hidden></p>
+    </div>
+    <div class="form-dialog__actions">
+      <button type="button" class="btn btn--quiet" id="create-cancel">Cancel</button>
+      <button type="submit" class="btn btn--primary" id="create-submit">Create card</button>
+    </div>
+  </form>
+</dialog>
+
+<datalist id="card-ids"></datalist>
+<div class="sr-only" id="announcer" aria-live="polite"></div>
+<div class="sr-only" id="alert-announcer" aria-live="assertive"></div>
+
+<template id="tpl-lane">
+  <section class="lane" data-status="">
+    <header class="lane__head">
+      <span class="lamp" aria-hidden="true"></span>
+      <h2></h2>
+      <span class="lane__count" aria-hidden="true"></span>
+    </header>
+    <ul class="lane__cards"></ul>
+  </section>
+</template>
+
+<template id="tpl-card">
+  <li>
+    <button type="button" class="card" data-card-id="">
+      <span class="card__title"></span>
+      <span class="card__meta">
+        <span class="card__type"></span>
+        <span class="card__id"></span>
+        <span class="card__parent" hidden>child card</span>
+      </span>
+    </button>
+  </li>
+</template>
+
+<template id="tpl-dep-row">
+  <li class="dep-row">
+    <button type="button" class="dep-row__title"></button>
+    <span class="dep-row__status"></span>
+    <button type="button" class="icon-btn dep-row__remove" hidden>
+      <svg aria-hidden="true"><use href="#i-close"/></svg>
+    </button>
+  </li>
+</template>
+</body>
+</html>

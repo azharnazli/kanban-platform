@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-15T02:45:30Z",
+  "title": "Design System: Kanban V1 Work Plot",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Chart Paper", "canonical": "#fbfaf7" },
+      "paper-deep": { "role": "neutral", "displayName": "Deep Paper", "canonical": "#f2f0e9" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#191c21" },
+      "ink-soft": { "role": "neutral", "displayName": "Ink Soft", "canonical": "#4a5158" },
+      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "#c6cbd4" },
+      "rule-strong": { "role": "neutral", "displayName": "Rule Strong", "canonical": "#7b8494" },
+      "chart-blue": { "role": "primary", "displayName": "Chart Blue", "canonical": "#1e5f8a" },
+      "chart-blue-deep": { "role": "primary", "displayName": "Chart Blue Deep", "canonical": "#14486b" },
+      "sea": { "role": "neutral", "displayName": "Sea Wash", "canonical": "#e4eef3" },
+      "sea-line": { "role": "neutral", "displayName": "Sea Line", "canonical": "#b9cdd9" },
+      "correction-magenta": { "role": "secondary", "displayName": "Correction Magenta", "canonical": "#a82460" },
+      "done-green": { "role": "tertiary", "displayName": "Done Green", "canonical": "#1d6b4f" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Masthead board title; italic serif at 1.5rem/600." },
+      "title": { "displayName": "Title", "purpose": "Card titles at 0.9375rem; sheet and dialog titles step up to 1.25rem/1.125rem." },
+      "body": { "displayName": "Body", "purpose": "Controls, notes, banners; system UI at 0.875rem/1.45." },
+      "label": { "displayName": "Label", "purpose": "Uppercase letterspaced field labels, block titles, lane headings, card meta." },
+      "data": { "displayName": "Data", "purpose": "Mono ids, codes, and tabular figures (counts, positions, progress)." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default easing for state transitions, sheet-in, and control hovers." },
+      { "name": "state-transition", "value": "150ms", "purpose": "Button, tick, card, and ruling-layer state changes." },
+      { "name": "sheet-in", "value": "200ms", "purpose": "Detail sheet entry animation." },
+      { "name": "dialog-in", "value": "150ms", "purpose": "Create dialog entry animation." },
+      { "name": "skeleton-pulse", "value": "1600ms ease-in-out infinite", "purpose": "Loading skeleton opacity pulse." }
+    ],
+    "breakpoints": [
+      { "name": "masthead-collapse", "value": "68rem", "purpose": "Masthead top grid stacks to one column; progress readout wraps." },
+      { "name": "board-mobile", "value": "47.5rem", "purpose": "Lane scale hides for step buttons, 78vw lanes with scroll snap, full-width sheet, two-column status strip, 2.75rem targets." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Default stamped chart-print control; hover fills chart blue deep.",
+      "html": "<button class=\"ds-btn\" type=\"button\">Apply</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s1); min-height: 2.25rem; padding: var(--s2) var(--s3); border: 1px solid var(--ink); border-radius: 0; background: var(--paper); color: var(--ink); font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out); } .ds-btn:hover { background: var(--blue-deep); border-color: var(--blue-deep); color: var(--paper); } .ds-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink-filled affirmative action (Apply, New card, Create card, Retry).",
+      "html": "<button class=\"ds-btn ds-btn--primary\" type=\"button\">New card</button>",
+      "css": ".ds-btn--primary { background: var(--ink); color: var(--paper); } .ds-btn--primary:hover { background: var(--blue-deep); border-color: var(--blue-deep); color: var(--paper); } .ds-btn--primary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary control (Clear, Graticule, Refresh) with softened border and text.",
+      "html": "<button class=\"ds-btn ds-btn--quiet\" type=\"button\">Graticule</button>",
+      "css": ".ds-btn--quiet { border-color: var(--rule-strong); color: var(--ink-soft); } .ds-btn--quiet:hover { background: var(--blue-deep); border-color: var(--blue-deep); color: var(--paper); } .ds-btn--quiet:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action in the single correction magenta.",
+      "html": "<button class=\"ds-btn ds-btn--danger\" type=\"button\">Remove</button>",
+      "css": ".ds-btn--danger { border-color: var(--magenta); color: var(--magenta); } .ds-btn--danger:hover { background: var(--magenta); border-color: var(--magenta); color: var(--paper); } .ds-btn--danger:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Uppercase label over a hard-edged select or input on paper.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field__label\" for=\"ds-status\">Status</label><select class=\"ds-field__control\" id=\"ds-status\"><option>All statuses</option></select></div>",
+      "css": ".ds-field { display: grid; gap: var(--s1); } .ds-field__label { font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); } .ds-field__control { min-height: 2.25rem; padding: var(--s1) var(--s2); border: 1px solid var(--rule-strong); border-radius: 0; background: var(--paper); color: var(--ink); font: inherit; } .ds-field__control:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Board Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Plotted ticket: italic serif title, uppercase meta, mono id.",
+      "html": "<button class=\"ds-card\" type=\"button\"><span class=\"ds-card__title\">North Atlantic Survey Grid</span><span class=\"ds-card__meta\"><span>Epic</span><span class=\"ds-card__id\">0b2c43aa…</span></span></button>",
+      "css": ".ds-card { display: block; width: 100%; min-height: 2.75rem; padding: var(--s2) var(--s3); border: 1px solid var(--rule-strong); border-radius: 0; background: var(--paper); text-align: left; cursor: pointer; transition: border-color 150ms var(--ease-out), background-color 150ms var(--ease-out); } .ds-card:hover { border-color: var(--ink); background: var(--paper-deep); } .ds-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; } .ds-card__title { display: block; font-family: var(--font-title); font-style: italic; font-size: 0.9375rem; line-height: 1.3; color: var(--ink); } .ds-card__meta { display: flex; align-items: baseline; gap: var(--s2); margin-top: var(--s1); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); } .ds-card__id { font-family: var(--font-data); letter-spacing: 0; text-transform: none; }"
+    },
+    {
+      "name": "Lane Header with Lamp",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Sticky lane strip: printed state lamp, uppercase heading, tabular count. Hazard variant shown.",
+      "html": "<header class=\"ds-lane-head\"><span class=\"ds-lamp ds-lamp--hazard\" aria-hidden=\"true\"></span><h2 class=\"ds-lane-head__title\">BLOCKED</h2><span class=\"ds-lane-head__count\">1</span></header>",
+      "css": ".ds-lane-head { display: flex; align-items: baseline; gap: var(--s2); padding: var(--s3) var(--s3) var(--s2); border-bottom: 1px solid var(--ink); background: var(--paper); } .ds-lane-head__title { margin: 0; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; } .ds-lane-head__count { margin-left: auto; font-variant-numeric: tabular-nums; font-size: 0.8125rem; color: var(--ink-soft); } .ds-lamp { align-self: center; width: 0.625rem; height: 0.625rem; border: 1px solid var(--ink-soft); position: relative; flex: none; } .ds-lamp--hazard { border-color: var(--magenta); background: var(--magenta); }"
+    },
+    {
+      "name": "Plot Tick",
+      "kind": "custom",
+      "refersTo": "button",
+      "description": "One step of the numbered 1-9 lane scale; in-view ticks wash sea.",
+      "html": "<button class=\"ds-tick\" type=\"button\" data-inview=\"true\" aria-label=\"Show lane 4 of 9: REVIEW\">4</button>",
+      "css": ".ds-tick { position: relative; min-width: 2.75rem; min-height: 2.75rem; padding: 0; border: 1px solid var(--rule-strong); border-radius: 0; background: var(--paper); color: var(--ink-soft); font-family: var(--font-data); font-size: 0.75rem; font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color 150ms var(--ease-out), border-color 150ms var(--ease-out), color 150ms var(--ease-out); } .ds-tick:hover { border-color: var(--ink); color: var(--ink); } .ds-tick[data-inview=\"true\"] { background: var(--sea); color: var(--ink); } .ds-tick:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Evidence Stamp",
+      "kind": "custom",
+      "refersTo": "field",
+      "description": "Tiny bordered provenance mark for labeled synthetic data.",
+      "html": "<span class=\"ds-stamp\">Synthetic</span>",
+      "css": ".ds-stamp { display: inline-block; padding: 0 var(--s1); border: 1px solid var(--rule-strong); font-size: 0.625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Working Chart Table",
+    "overview": "Kanban V1's board is drawn as a chart-room plotting table: cards sit as plotted labels inside nine ruled status lanes, dependencies are course lines drawn between them, and every quiet surface is a printed sheet of chart paper. The visual system is chart-print: a chart-white ground, ink black text, chart-blue graticule hairlines and interactive strokes, and a single magenta correction color for attention states. There are no rounded corners, no shadows, and no decorative imagery; structure is carried by hairlines, printed state marks, and tabular figures. The global system is the durable layer documented here: palette roles, type voices, rule geometry, flat depth, and the control vocabulary (buttons, fields, cards, lamps, stamps). The board's passage-plan composition (nine lanes as a plotted route, live dependency course lines, the toggleable graticule state, the title-block masthead) is the board surface concept owned by .impeccable/surfaces/static-index-html.md, not a global mandate. Other surfaces reuse the chart-print language without being forced into the lane/course-line layout.",
+    "keyCharacteristics": [
+      "Flat chart-print surfaces: 1px hairline rules, zero radius, no shadows, no gradients except the graticule ruling.",
+      "Two-voice typography: italic serif titles against upright system UI and mono tabular data; no fetched webfonts.",
+      "One correction accent: magenta only for attention/blocked/rejected states; chart blue is the interactive voice, green the done state.",
+      "Printed state vocabulary: square lamps with inset marks, ink fills for pressed/current controls, 2px ink outlines for focus and selection.",
+      "Graticule as a real user state (toggle), not texture.",
+      "Keyboard-first: every state change is visible and focus is always drawn."
+    ],
+    "rules": [
+      { "name": "The One Correction Rule", "body": "Magenta appears only where the plan needs correction or attention (blocked, rejected, error, destructive). It is never a styling accent; its rarity is what makes a blocked move read instantly.", "section": "colors" },
+      { "name": "The Graticule State Rule", "body": "The chart-blue ruling (--sea-line) is the chart world made operable: the Graticule control toggles it (#grid-toggle, aria-pressed, static/app.js:1226-1231), so it carries state rather than acting as decoration. This is approved direction (surface brief OWN-WORLD chart-blue graticule hairlines; FORM toggleable graticule as a real state), and the design detector's repeating-stripes-gradient advisory is accepted for exactly this reason: the brief wins.", "section": "colors" },
+      { "name": "The Chart-White Ground Rule", "body": "Surfaces never darken to signal hierarchy; tonal steps (sea, deep paper) mean state (in-view, hover, pressed, loading), not elevation.", "section": "colors" },
+      { "name": "The No-Webfont Rule", "body": "Nothing is fetched at runtime: no font files, no external assets. Identity must survive offline, so structure, rules, case, and tabular figures carry the chart character.", "section": "typography" },
+      { "name": "The Italic-Means-Voice Rule", "body": "Italic is for titles and quiet empty-state notes, never for controls, labels, or data.", "section": "typography" },
+      { "name": "The Flat Chart Rule", "body": "No shadow, no glow, no blur. A surface that needs attention takes a border, a rule, or a state mark, never a shadow.", "section": "elevation" },
+      { "name": "The Right-Angle Rule", "body": "Nothing is rounded. State lives in borders, fills, rule weight, and mark geometry, not corner smoothing.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep `border-radius` at 0 and carry structure with 1px rules; the system has no `box-shadow`.",
+      "Do keep magenta to correction and attention contexts; chart blue is interactive, green is done, neutrals are everything else.",
+      "Do use tabular numerals for every count, id, and position.",
+      "Do keep the graticule a user-toggled state in chart blue; it is approved direction, not a pattern violation.",
+      "Do draw focus with the shared 2px ink outline at 2px offset and keep hover in the chart-blue-deep fill family.",
+      "Do treat the surface brief's lane/course-line composition as board-local: it can change without touching this file, while the palette, type voices, rules, and state marks are the durable contract.",
+      "Do honor `prefers-reduced-motion` and `forced-colors`; both already have global rules (`static/app.css:1204-1237`)."
+    ],
+    "donts": [
+      "Don't add shadows, gradients (beyond the graticule ruling), glows, or rounded corners.",
+      "Don't fetch webfonts or any external asset; the board stays fully offline (asserted in `tests/static.test.mjs`).",
+      "Don't introduce a second attention color or reuse magenta decoratively.",
+      "Don't rely on color alone for status; lamp geometry, counts, and text labels accompany every state.",
+      "Don't promote the nine-lane passage-plan concept into the global system; it belongs to the board surface."
+    ]
+  }
+}
